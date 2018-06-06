@@ -3,13 +3,16 @@
 
 KUKAPilot::KUKAPilot()
 {
+	speed_rotate = 0;
+	speed_move = 0;
+
 	ClientId = simxStart("127.0.0.1", 19999, true, true, 5000, 5);
 
 	simxInt ret;
-	ret = simxGetObjectHandle(ClientId, "rollingJoint_fl", &Wheel_fl, simx_opmode_oneshot_wait);
-	ret = simxGetObjectHandle(ClientId, "rollingJoint_rl", &Wheel_rl, simx_opmode_oneshot_wait);
-	ret = simxGetObjectHandle(ClientId, "rollingJoint_fr", &Wheel_fr, simx_opmode_oneshot_wait);
-	ret = simxGetObjectHandle(ClientId, "rollingJoint_rr", &Wheel_rr, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "rollingJoint_fl", &Wheel_back_right, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "rollingJoint_rl", &Wheel_front_right, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "rollingJoint_fr", &Wheel_back_left, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "rollingJoint_rr", &Wheel_front_left, simx_opmode_oneshot_wait);
 }
 
 
@@ -33,8 +36,25 @@ void KUKAPilot::setRotationSpeed(double speed)
 void KUKAPilot::resetMovement()
 {
 	simxInt ret;
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_fl, -3.1415f * 0.25f, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_rl, -3.1415f * 0.25f, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_fr, 3.1415f * 0.25f, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_rr, 3.1415f * 0.25f, simx_opmode_oneshot_wait);
+
+	double brSpeed = speed_move;
+	double frSpeed = speed_move;
+	double blSpeed = speed_move;
+	double flSpeed = speed_move;
+
+	if (speed_rotate > 0)
+	{
+		blSpeed += speed_rotate / 2.0;
+		flSpeed += speed_rotate / 2.0;
+	}
+	else if(speed_rotate < 0)
+	{
+		brSpeed += speed_rotate / 2.0;
+		frSpeed += speed_rotate / 2.0;
+	}
+
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, brSpeed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, frSpeed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, blSpeed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, flSpeed, simx_opmode_oneshot_wait);
 }

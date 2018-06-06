@@ -1,0 +1,10 @@
+#pragma once
+
+enum ECommand : int
+{
+	RC_CMD_MOVE_FORWARD,
+	RC_CMD_MOVE_BACKWARD,
+	RC_CMD_STOP_MOVEMENT,
+	RC_CMD_ROTATE_RIGHT,
+	RC_CMD_ROTATE_LEFT
+};

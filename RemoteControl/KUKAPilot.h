@@ -17,10 +17,10 @@ private:
 protected:
 	simxInt ClientId;
 
-	simxInt Wheel_fl;
-	simxInt Wheel_rl;
-	simxInt Wheel_fr;
-	simxInt Wheel_rr;
+	simxInt Wheel_back_right;
+	simxInt Wheel_front_right;
+	simxInt Wheel_back_left;
+	simxInt Wheel_front_left;
 	simxInt sensor;
 
 	double speed_move;
