@@ -37,22 +37,6 @@ void KUKAPilot::resetMovement()
 {
 	simxInt ret;
 
-	double brSpeed = speed_move;
-	double frSpeed = speed_move;
-	double blSpeed = speed_move;
-	double flSpeed = speed_move;
-
-	if (speed_rotate > 0)
-	{
-		blSpeed += speed_rotate / 2.0;
-		flSpeed += speed_rotate / 2.0;
-	}
-	else if(speed_rotate < 0)
-	{
-		brSpeed += speed_rotate / 2.0;
-		frSpeed += speed_rotate / 2.0;
-	}
-
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed_move - speed_rotate/2, simx_opmode_oneshot_wait);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
