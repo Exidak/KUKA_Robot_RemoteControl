@@ -53,8 +53,8 @@ void KUKAPilot::resetMovement()
 		frSpeed += speed_rotate / 2.0;
 	}
 
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, brSpeed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, frSpeed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, blSpeed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, flSpeed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed_move - speed_rotate/2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
 }
