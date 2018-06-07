@@ -1,4 +1,8 @@
 #include "stdafx.h"
+
+#include <chrono>
+#include <thread>
+
 #include "KUKAPilot.h"
 
 KUKAPilot::KUKAPilot()
@@ -33,12 +37,41 @@ void KUKAPilot::setRotationSpeed(double speed)
 	resetMovement();
 }
 
+void KUKAPilot::moveRight(double speed)
+{
+	moveSideways(speed);
+}
+
+void KUKAPilot::moveLeft(double speed)
+{
+	moveSideways(-speed);
+}
+
+void KUKAPilot::waitNextCommand(int msecs)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(msecs));
+}
+
 void KUKAPilot::resetMovement()
 {
 	simxInt ret;
 
+//	simxPauseCommunication(ClientId, 1);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed_move - speed_rotate/2, simx_opmode_oneshot_wait);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
 	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
+//	simxPauseCommunication(ClientId, 0);
+}
+
+void KUKAPilot::moveSideways(double speed)
+{
+	simxInt ret;
+
+//	simxPauseCommunication(ClientId, 1);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, -speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, -speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed, simx_opmode_oneshot_wait);
+//	simxPauseCommunication(ClientId, 0);
 }
