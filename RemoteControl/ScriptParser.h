@@ -15,8 +15,8 @@ public:
 	ScriptParser(ComInterpreter *com);
 	~ScriptParser();
 
-	void runScript(std::string &script);
-	void runScriptFromFile(std::string path);
+	void runScript(std::string &script, bool isUtf8 = true);
+	void runScriptFromFile(std::string path, bool isUtf8 = true);
 private:
 	enum ELexType
 	{
@@ -59,7 +59,7 @@ private:
 	typedef std::vector<BaseLexemPtr> vecLexems;
 	typedef std::map<std::string, ECommand> MapDict;
 
-	vecLexems parseScript(std::string &script);
+	vecLexems parseScript(std::string &script, bool isUtf8 = true);
 	void processFunction(vecLexems::iterator &itBeg, vecLexems::iterator &itEnd);
 	void processMove(vecLexems::iterator &itBeg, vecLexems::iterator &itEnd);
 	void processRotate(vecLexems::iterator &itBeg, vecLexems::iterator &itEnd);

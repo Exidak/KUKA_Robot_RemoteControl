@@ -33,7 +33,7 @@ KUKAPilot::~KUKAPilot()
 
 void KUKAPilot::setMoveSpeed(double speed)
 {
-	speed_move = speed;
+	speed_move = -speed;
 	resetMovement();
 }
 
@@ -70,10 +70,10 @@ void KUKAPilot::resetMovement()
 	simxInt ret;
 
 //	simxPauseCommunication(ClientId, 1);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed_move - speed_rotate/2, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed_move + speed_rotate/2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed_move + speed_rotate / 2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed_move - speed_rotate / 2, simx_opmode_oneshot_wait);
 //	simxPauseCommunication(ClientId, 0);
 }
 
@@ -82,9 +82,9 @@ void KUKAPilot::moveSideways(double speed)
 	simxInt ret;
 
 //	simxPauseCommunication(ClientId, 1);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, speed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, -speed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, -speed, simx_opmode_oneshot_wait);
-	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_right, -speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_right, speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_back_left, speed, simx_opmode_oneshot_wait);
+	ret = simxSetJointTargetVelocity(ClientId, Wheel_front_left, -speed, simx_opmode_oneshot_wait);
 //	simxPauseCommunication(ClientId, 0);
 }

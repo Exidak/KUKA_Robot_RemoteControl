@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <filesystem>
+#include "str_helper.h"
 #include "ScriptParser.h"
 
 namespace fs = std::experimental::filesystem;
@@ -8,7 +9,7 @@ namespace fs = std::experimental::filesystem;
 ScriptParser::ScriptParser(ComInterpreter *com)
 {
 	m_com = com;
-
+/*
 	m_Dictionary.insert({ "function", RC_CMD_FUNCTION });
 	m_Dictionary.insert({ "begin", RC_CMD_BEGIN });
 	m_Dictionary.insert({ "end", RC_CMD_END });
@@ -21,6 +22,19 @@ ScriptParser::ScriptParser(ComInterpreter *com)
 	m_Dictionary.insert({ "left", RC_CMD_LEFT });
 	m_Dictionary.insert({ "wait", RC_CMD_WAIT });
 	m_Dictionary.insert({ "arm", RC_CMD_ARM_PLATFORM_ROTATE });
+*/
+	m_Dictionary.insert({ "функция", RC_CMD_FUNCTION });
+	m_Dictionary.insert({ "начало", RC_CMD_BEGIN });
+	m_Dictionary.insert({ "конец", RC_CMD_END });
+	m_Dictionary.insert({ "движение", RC_CMD_MOVE });
+	m_Dictionary.insert({ "поворот", RC_CMD_ROTATE });
+	m_Dictionary.insert({ "стоп", RC_CMD_STOP });
+	m_Dictionary.insert({ "вперед", RC_CMD_FWD });
+	m_Dictionary.insert({ "назад", RC_CMD_BCW });
+	m_Dictionary.insert({ "вправо", RC_CMD_RIGHT });
+	m_Dictionary.insert({ "влево", RC_CMD_LEFT });
+	m_Dictionary.insert({ "ждать", RC_CMD_WAIT });
+	m_Dictionary.insert({ "рука", RC_CMD_ARM_PLATFORM_ROTATE });
 
 	// read functions
 	if (!fs::is_directory("scripts") || !fs::exists("scripts")) { // Check if src folder exists
@@ -31,7 +45,7 @@ ScriptParser::ScriptParser(ComInterpreter *com)
 
 ScriptParser::~ScriptParser() {}
 
-void ScriptParser::runScript(std::string & script)
+void ScriptParser::runScript(std::string & script, bool isUtf8)
 {
 	vecLexems vLexs = parseScript(script);
 
@@ -79,7 +93,7 @@ void ScriptParser::runScript(std::string & script)
 			//check if script exist
 			std::string filename = "scripts/" + name;
 			if (fs::exists(filename))
-				runScriptFromFile(filename);
+				runScriptFromFile(filename, false);
 			else
 				throw RC_ERR_SCRIPT_SYNTAX;
 		}
@@ -88,7 +102,7 @@ void ScriptParser::runScript(std::string & script)
 	}
 }
 
-void ScriptParser::runScriptFromFile(std::string path)
+void ScriptParser::runScriptFromFile(std::string path, bool isUtf8)
 {
 	std::ifstream t(path);
 	std::string script;
@@ -103,7 +117,7 @@ void ScriptParser::runScriptFromFile(std::string path)
 	runScript(script);
 }
 
-ScriptParser::vecLexems ScriptParser::parseScript(std::string & script)
+ScriptParser::vecLexems ScriptParser::parseScript(std::string & script, bool isUtf8)
 {
 	vecLexems vLexs;
 
@@ -111,8 +125,18 @@ ScriptParser::vecLexems ScriptParser::parseScript(std::string & script)
 	char * tempPtr = strtok(&*script.begin(), " \n");
 	while (tempPtr)
 	{
+		std::string lexem;
+		if (isUtf8)
+		{
+			// convert utf8 to cp1251
+			const int ssize = (int)strlen(tempPtr);
+			char *cpStr = new char[ssize];
+			convert_utf8_to_windows1251(tempPtr, cpStr, ssize);
+			lexem = cpStr;
+		}
+		else
+			lexem = tempPtr;
 		// find in commands
-		std::string lexem = tempPtr;
 		MapDict::iterator itDicr = m_Dictionary.find(lexem);
 		if (itDicr != m_Dictionary.end())
 		{
