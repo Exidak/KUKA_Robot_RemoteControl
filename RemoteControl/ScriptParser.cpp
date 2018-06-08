@@ -47,7 +47,7 @@ ScriptParser::~ScriptParser() {}
 
 void ScriptParser::runScript(std::string & script, bool isUtf8)
 {
-	vecLexems vLexs = parseScript(script);
+	vecLexems vLexs = parseScript(script, isUtf8);
 
 	vecLexems::iterator lexEnd = vLexs.end();
 	for (vecLexems::iterator lexem = vLexs.begin(); lexem != lexEnd; ++lexem)
@@ -82,7 +82,7 @@ void ScriptParser::runScript(std::string & script, bool isUtf8)
 					m_com->execCommand(RC_CMD_ARM_PLATFORM_ROTATE);
 					break;
 				default:
-					throw RC_ERR_SCRIPT_SYNTAX;
+					throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
 			}
 			continue;
 		}
@@ -95,10 +95,10 @@ void ScriptParser::runScript(std::string & script, bool isUtf8)
 			if (fs::exists(filename))
 				runScriptFromFile(filename, false);
 			else
-				throw RC_ERR_SCRIPT_SYNTAX;
+				throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
 		}
 		else
-			throw RC_ERR_SCRIPT_SYNTAX;
+			throw ScriptError((*lexem)->position, RC_ERR_SCRIPT_SYNTAX);
 	}
 }
 
@@ -114,13 +114,13 @@ void ScriptParser::runScriptFromFile(std::string path, bool isUtf8)
 	script.assign((std::istreambuf_iterator<char>(t)),
 		std::istreambuf_iterator<char>());
 
-	runScript(script);
+	runScript(script, isUtf8);
 }
 
 ScriptParser::vecLexems ScriptParser::parseScript(std::string & script, bool isUtf8)
 {
 	vecLexems vLexs;
-
+	int pos = 0;
 	// get word by word
 	char * tempPtr = strtok(&*script.begin(), " \n");
 	while (tempPtr)
@@ -140,22 +140,23 @@ ScriptParser::vecLexems ScriptParser::parseScript(std::string & script, bool isU
 		MapDict::iterator itDicr = m_Dictionary.find(lexem);
 		if (itDicr != m_Dictionary.end())
 		{
-			vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new ReservedLexem(LexReserved, 0, itDicr->second))));
+			vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new ReservedLexem(LexReserved, pos, itDicr->second))));
 		}
 		else // check if int number
 		{
 			try {
 				int num = std::stoi(lexem);
-				vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new NumberLexem(LexNumber, 0, num))));
+				vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new NumberLexem(LexNumber, pos, num))));
 			}
 			catch (std::invalid_argument)
 			{
 				// this is word
-				vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new WordLexem(LexWord, 0, lexem))));
+				vLexs.push_back(BaseLexemPtr(static_cast<BaseLexem*>(new WordLexem(LexWord, pos, lexem))));
 			}
 
 		}
 		tempPtr = strtok(NULL, "  \n");
+		pos++;
 	}
 
 	return vLexs;
@@ -173,14 +174,14 @@ void ScriptParser::processFunction(vecLexems::iterator & itBeg, vecLexems::itera
 		//check if script already exist
 		std::string filename = "scripts/" + name;
 		if (fs::exists(filename))
-			throw RC_ERR_SCRIPT_EXIST;
+			ScriptError((*itBeg)->position, RC_ERR_SCRIPT_EXIST);
 
 		itBeg++;
 		if (itBeg != itEnd && (*itBeg)->type == LexReserved)
 		{
 			ReservedLexem *bglex = static_cast<ReservedLexem*>(itBeg->get());
 			if (bglex->com != RC_CMD_BEGIN)
-				throw RC_ERR_SCRIPT_SYNTAX;
+				throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 			itBeg++;
 
 			while (itBeg != itEnd)
@@ -212,7 +213,7 @@ void ScriptParser::processFunction(vecLexems::iterator & itBeg, vecLexems::itera
 						if (keyword.size())
 							script_text += keyword;
 						else
-							throw RC_ERR_SCRIPT_SYNTAX;
+							throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 					}
 				}
 				script_text += " ";
@@ -227,7 +228,7 @@ void ScriptParser::processFunction(vecLexems::iterator & itBeg, vecLexems::itera
 		t.close();
 	}
 	else
-		throw RC_ERR_SCRIPT_SYNTAX;
+		throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 }
 
 void ScriptParser::processMove(vecLexems::iterator & itBeg, vecLexems::iterator & itEnd)
@@ -245,7 +246,7 @@ void ScriptParser::processMove(vecLexems::iterator & itBeg, vecLexems::iterator 
 		else if (reslex->com == RC_CMD_LEFT)
 			cmd4robot = RC_CMD_MOVE_LEFT;
 		else
-			throw RC_ERR_SCRIPT_SYNTAX;
+			throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 
 		itBeg++;
 		if (itBeg != itEnd && (*itBeg)->type == LexNumber) // MUST BE SPEED
@@ -257,10 +258,10 @@ void ScriptParser::processMove(vecLexems::iterator & itBeg, vecLexems::iterator 
 			m_com->execCommand(cmd4robot, speed);
 		}
 		else
-			throw RC_ERR_SCRIPT_SYNTAX;
+			throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 	}
 	else
-		throw RC_ERR_SCRIPT_SYNTAX;
+		throw ScriptError((*itBeg)->position, RC_ERR_SCRIPT_SYNTAX);
 }
 
 void ScriptParser::processRotate(vecLexems::iterator & itBeg, vecLexems::iterator & itEnd)

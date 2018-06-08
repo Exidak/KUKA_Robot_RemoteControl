@@ -17,6 +17,13 @@ public:
 
 	void runScript(std::string &script, bool isUtf8 = true);
 	void runScriptFromFile(std::string path, bool isUtf8 = true);
+
+	struct ScriptError
+	{
+		ScriptError(int p, EErrCode e) : err(e), pos(p) {}
+		EErrCode err;
+		int pos;
+	};
 private:
 	enum ELexType
 	{
