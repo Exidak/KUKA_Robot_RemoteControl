@@ -39,7 +39,7 @@ void KUKAPilot::setMoveSpeed(double speed)
 
 void KUKAPilot::setRotationSpeed(double speed)
 {
-	speed_rotate = speed;
+	speed_rotate = -speed;
 	resetMovement();
 }
 
