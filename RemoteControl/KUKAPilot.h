@@ -20,6 +20,8 @@ public:
 	void moveLeft(double speed);
 	// wait until next command
 	void waitNextCommand(int msecs);
+	//// ARM
+	void rotatePlatform(int speed);
 private:
 	void resetMovement();
 	void moveSideways(double speed);
@@ -31,6 +33,12 @@ protected:
 	simxInt Wheel_back_left;
 	simxInt Wheel_front_left;
 	simxInt sensor;
+
+	simxInt Arm_0;
+	simxInt Arm_1;
+	simxInt Arm_2;
+	simxInt Arm_3;
+	simxInt Arm_4;
 
 	double speed_move;
 	double speed_rotate;

@@ -1,5 +1,8 @@
 #include "stdafx.h"
+#include <filesystem>
 #include "ScriptParser.h"
+
+namespace fs = std::experimental::filesystem;
 
 
 ScriptParser::ScriptParser(ComInterpreter *com)
@@ -17,6 +20,12 @@ ScriptParser::ScriptParser(ComInterpreter *com)
 	m_Dictionary.insert({ "right", RC_CMD_RIGHT });
 	m_Dictionary.insert({ "left", RC_CMD_LEFT });
 	m_Dictionary.insert({ "wait", RC_CMD_WAIT });
+	m_Dictionary.insert({ "arm", RC_CMD_ARM_PLATFORM_ROTATE });
+
+	// read functions
+	if (!fs::is_directory("scripts") || !fs::exists("scripts")) { // Check if src folder exists
+		fs::create_directory("scripts"); // create src folder
+	}
 }
 
 
@@ -54,14 +63,25 @@ void ScriptParser::runScript(std::string & script)
 					lexem++;
 					processWait(lexem, lexEnd);
 					break;
+				case RC_CMD_ARM_PLATFORM_ROTATE:
+					lexem++;
+					m_com->execCommand(RC_CMD_ARM_PLATFORM_ROTATE);
+					break;
 				default:
 					throw RC_ERR_SCRIPT_SYNTAX;
 			}
 			continue;
 		}
-		else if ((*lexem)->type != LexWord)// or it can be presaved script
+		else if ((*lexem)->type == LexWord)// or it can be presaved script
 		{
-			// TODO find in presaved scripts
+			WordLexem *reslex = static_cast<WordLexem*>(lexem->get());
+			std::string name = reslex->str;
+			//check if script exist
+			std::string filename = "scripts/" + name;
+			if (fs::exists(filename))
+				runScriptFromFile(filename);
+			else
+				throw RC_ERR_SCRIPT_SYNTAX;
 		}
 		else
 			throw RC_ERR_SCRIPT_SYNTAX;
@@ -70,7 +90,7 @@ void ScriptParser::runScript(std::string & script)
 
 void ScriptParser::runScriptFromFile(std::string path)
 {
-	std::ifstream t("script.txt");
+	std::ifstream t(path);
 	std::string script;
 
 	t.seekg(0, std::ios::end);
@@ -119,22 +139,68 @@ ScriptParser::vecLexems ScriptParser::parseScript(std::string & script)
 
 void ScriptParser::processFunction(vecLexems::iterator & itBeg, vecLexems::iterator & itEnd)
 {
-	// TODO script saving
+	std::string script_text;
+
 	if (itBeg != itEnd && (*itBeg)->type == LexWord) // MUST BE SCRIPT NAME
 	{
 		WordLexem *reslex = static_cast<WordLexem*>(itBeg->get());
 		std::string name = reslex->str;
 
-		while (itBeg != itEnd)
+		//check if script already exist
+		std::string filename = "scripts/" + name;
+		if (fs::exists(filename))
+			throw RC_ERR_SCRIPT_EXIST;
+
+		itBeg++;
+		if (itBeg != itEnd && (*itBeg)->type == LexReserved)
 		{
-			if ((*itBeg)->type == LexReserved)
-			{
-				ReservedLexem *reslex = static_cast<ReservedLexem*>(itBeg->get());
-				if (reslex->com == RC_CMD_END)
-					break;
-			}
+			ReservedLexem *bglex = static_cast<ReservedLexem*>(itBeg->get());
+			if (bglex->com != RC_CMD_BEGIN)
+				throw RC_ERR_SCRIPT_SYNTAX;
 			itBeg++;
+
+			while (itBeg != itEnd)
+			{
+				if ((*itBeg)->type == LexWord)
+				{
+					WordLexem *reslex = static_cast<WordLexem*>(itBeg->get());
+					script_text += reslex->str;
+				}
+				else if ((*itBeg)->type == LexNumber)
+				{
+					NumberLexem *reslex = static_cast<NumberLexem*>(itBeg->get());
+					script_text += std::to_string(reslex->num);
+				}
+				else if ((*itBeg)->type == LexReserved)
+				{
+					ReservedLexem *reslex = static_cast<ReservedLexem*>(itBeg->get());
+					if (reslex->com == RC_CMD_END)
+						break;
+					else
+					{
+						std::string keyword;
+						for (auto dkey : m_Dictionary)
+							if (dkey.second == reslex->com)
+							{
+								keyword = dkey.first;
+								break;
+							}
+						if (keyword.size())
+							script_text += keyword;
+						else
+							throw RC_ERR_SCRIPT_SYNTAX;
+					}
+				}
+				script_text += " ";
+				itBeg++;
+			}
 		}
+
+		// save script
+		std::ofstream t(filename);
+		if (t)
+			t << script_text;
+		t.close();
 	}
 	else
 		throw RC_ERR_SCRIPT_SYNTAX;

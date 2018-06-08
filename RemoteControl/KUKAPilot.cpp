@@ -17,6 +17,12 @@ KUKAPilot::KUKAPilot()
 	ret = simxGetObjectHandle(ClientId, "rollingJoint_rl", &Wheel_front_right, simx_opmode_oneshot_wait);
 	ret = simxGetObjectHandle(ClientId, "rollingJoint_fr", &Wheel_back_left, simx_opmode_oneshot_wait);
 	ret = simxGetObjectHandle(ClientId, "rollingJoint_rr", &Wheel_front_left, simx_opmode_oneshot_wait);
+
+	ret = simxGetObjectHandle(ClientId, "youBotArmJoint0", &Arm_0, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "youBotArmJoint1", &Arm_1, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "youBotArmJoint2", &Arm_2, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "youBotArmJoint3", &Arm_3, simx_opmode_oneshot_wait);
+	ret = simxGetObjectHandle(ClientId, "youBotArmJoint4", &Arm_4, simx_opmode_oneshot_wait);
 }
 
 
@@ -50,6 +56,13 @@ void KUKAPilot::moveLeft(double speed)
 void KUKAPilot::waitNextCommand(int msecs)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(msecs));
+}
+
+void KUKAPilot::rotatePlatform(int pos)
+{
+	simxInt ret;
+
+	ret = simxSetJointPosition(ClientId, Arm_0, 180.0f, simx_opmode_oneshot_wait);
 }
 
 void KUKAPilot::resetMovement()

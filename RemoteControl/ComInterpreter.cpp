@@ -41,6 +41,9 @@ bool ComInterpreter::execCommand(ECommand cmdCode, int arg)
 	case RC_CMD_WAIT:
 		m_pilot->waitNextCommand(arg);
 		break;
+	case RC_CMD_ARM_PLATFORM_ROTATE:
+		m_pilot->rotatePlatform(arg);
+		break;
 	default:
 		break;
 	}

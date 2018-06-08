@@ -10,6 +10,7 @@ enum ECommand : int
 	RC_CMD_STOP_MOVEMENT,
 	RC_CMD_ROTATE_RIGHT,
 	RC_CMD_ROTATE_LEFT,
+	RC_CMD_ARM_PLATFORM_ROTATE,
 
 	// other service commands
 	RC_CMD_FUNCTION,
@@ -23,4 +24,5 @@ enum ECommand : int
 	RC_CMD_RIGHT,
 	RC_CMD_LEFT,
 	RC_CMD_WAIT,
+	RC_CMD_ARM
 };

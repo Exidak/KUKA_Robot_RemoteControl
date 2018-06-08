@@ -1,16 +1,2 @@
-function test
-begin
-move right 1
-wait 300
-stop
-rotate right 3
-wait 300
-stop
-end
-
-move right 1
-wait 3000
-stop
-rotate right 3
-wait 3000
-stop
+arm
+arm
