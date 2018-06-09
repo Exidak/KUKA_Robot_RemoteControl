@@ -2,14 +2,19 @@
 #include "ComInterpreter.h"
 
 
-ComInterpreter::ComInterpreter(KUKAPilot *pilot)
+ComInterpreter::ComInterpreter()
 {
-	m_pilot = pilot;
+	m_pilot = new KUKAPilot();
 }
 
 
 ComInterpreter::~ComInterpreter()
 {
+}
+
+bool ComInterpreter::connect()
+{
+	return m_pilot->connect();
 }
 
 bool ComInterpreter::execCommand(ECommand cmdCode, int arg)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ScriptParser.h"
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -9,6 +11,8 @@ public:
 	~MainWindow();
 
 	void setupUi();
+private:
+	void activateButtons(bool b);
 private slots:
 	void slotPressConnect();
 	void slotBrowseScript();
@@ -26,4 +30,5 @@ protected:
 	QTextEdit *textScript;
 	QPushButton *btnRun;
 
+	ScriptParser *m_scr;
 };

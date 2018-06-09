@@ -9,8 +9,19 @@ KUKAPilot::KUKAPilot()
 {
 	speed_rotate = 0;
 	speed_move = 0;
+}
 
+
+KUKAPilot::~KUKAPilot()
+{
+	simxFinish(ClientId);
+}
+
+bool KUKAPilot::connect()
+{
 	ClientId = simxStart("127.0.0.1", 19999, true, true, 5000, 5);
+	if (ClientId == -1) 
+		return false;
 
 	simxInt ret;
 	ret = simxGetObjectHandle(ClientId, "rollingJoint_fl", &Wheel_back_right, simx_opmode_oneshot_wait);
@@ -23,12 +34,8 @@ KUKAPilot::KUKAPilot()
 	ret = simxGetObjectHandle(ClientId, "youBotArmJoint2", &Arm_2, simx_opmode_oneshot_wait);
 	ret = simxGetObjectHandle(ClientId, "youBotArmJoint3", &Arm_3, simx_opmode_oneshot_wait);
 	ret = simxGetObjectHandle(ClientId, "youBotArmJoint4", &Arm_4, simx_opmode_oneshot_wait);
-}
 
-
-KUKAPilot::~KUKAPilot()
-{
-	simxFinish(ClientId);
+	return true;
 }
 
 void KUKAPilot::setMoveSpeed(double speed)

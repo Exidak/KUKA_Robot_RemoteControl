@@ -10,6 +10,8 @@ public:
 	KUKAPilot();
 	~KUKAPilot();
 
+	bool connect();
+
 	// Move backward or toward
 	void setMoveSpeed(double speed);
 	// Rotate 

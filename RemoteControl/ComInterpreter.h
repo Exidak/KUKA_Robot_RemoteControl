@@ -6,9 +6,10 @@
 class ComInterpreter
 {
 public:
-	ComInterpreter(KUKAPilot *pilot);
+	ComInterpreter();
 	~ComInterpreter();
 
+	bool connect();
 	bool execCommand(ECommand cmdCode, int arg = 1);
 
 protected:

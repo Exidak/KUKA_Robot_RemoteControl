@@ -12,8 +12,11 @@
 class ScriptParser
 {
 public:
-	ScriptParser(ComInterpreter *com);
+	ScriptParser();
 	~ScriptParser();
+
+	bool connect();
+	std::vector<std::string> getSavedScripts();
 
 	void runScript(std::string &script, bool isUtf8 = true);
 	void runScriptFromFile(std::string path, bool isUtf8 = true);

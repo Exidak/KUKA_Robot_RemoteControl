@@ -6,9 +6,9 @@
 namespace fs = std::experimental::filesystem;
 
 
-ScriptParser::ScriptParser(ComInterpreter *com)
+ScriptParser::ScriptParser()
 {
-	m_com = com;
+	m_com = new ComInterpreter();
 /*
 	m_Dictionary.insert({ "function", RC_CMD_FUNCTION });
 	m_Dictionary.insert({ "begin", RC_CMD_BEGIN });
@@ -44,6 +44,23 @@ ScriptParser::ScriptParser(ComInterpreter *com)
 
 
 ScriptParser::~ScriptParser() {}
+
+bool ScriptParser::connect()
+{
+	return m_com->connect();
+}
+
+std::vector<std::string> ScriptParser::getSavedScripts()
+{
+	std::vector<std::string> vScripts;
+	std::string path = "scripts";
+	for (auto & p : fs::directory_iterator(path))
+	{
+		std::string filename = p.path().string().substr(p.path().string().find('\\') + 1);
+		vScripts.push_back(filename);
+	}
+	return vScripts;
+}
 
 void ScriptParser::runScript(std::string & script, bool isUtf8)
 {

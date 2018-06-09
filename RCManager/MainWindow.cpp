@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "tmp\moc_MainWindow.cpp"
-
+#include "ScriptParser.h"
 
 MainWindow::MainWindow(QObject *parent)
 {
+	m_scr = new ScriptParser();
 	setupUi();
 }
 
@@ -99,7 +100,20 @@ void MainWindow::setupUi()
 	gridLayout->setColumnStretch(1, 3);
 
 	setCentralWidget(centralwidget);
+
+	activateButtons(false);
 } // setupUi
+
+void MainWindow::activateButtons(bool b)
+{
+	leFileScript->setEnabled(b);
+	btnBrowse->setEnabled(b);
+	btnFileLoad->setEnabled(b);
+	lstScripts->setEnabled(b);
+	btnScrLoad->setEnabled(b);
+	textScript->setEnabled(b);
+	btnRun->setEnabled(b);
+}
 
 void MainWindow::slotBrowseScript()
 {
@@ -121,7 +135,14 @@ void MainWindow::slotLoadFileScript()
 
 void MainWindow::slotLoadSavedScript()
 {
-	// TODO
+	QListWidgetItem *cur = lstScripts->currentItem();
+	if (cur)
+	{
+		std::string scr_path = "script\\" + cur->text().toStdString();
+		m_scr->runScript(scr_path, true);
+	}
+	else
+		QMessageBox::warning(this, QString::fromLocal8Bit("Ошибка"), QString::fromLocal8Bit("Выберите снчала скрипт"), QMessageBox::Ok, QMessageBox::Ok);
 }
 
 void MainWindow::slotRunScript()
@@ -131,5 +152,13 @@ void MainWindow::slotRunScript()
 
 void MainWindow::slotPressConnect()
 {
-	// TODO
+	if (m_scr->connect())
+	{
+		lblStatus->setText("V");
+		activateButtons(true);
+		for (auto it : m_scr->getSavedScripts())
+			lstScripts->addItem(QString::fromLocal8Bit(it.c_str()));
+	}
+	else
+		QMessageBox::critical(this, QString::fromLocal8Bit("Ошибка соединения"), QString::fromLocal8Bit("Не удается соединиться с моделью или зарегистрировать все двигатели"), QMessageBox::Ok, QMessageBox::Ok);
 }
