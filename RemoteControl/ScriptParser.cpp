@@ -62,6 +62,25 @@ std::vector<std::string> ScriptParser::getSavedScripts()
 	return vScripts;
 }
 
+std::string ScriptParser::getScriptText(std::string name)
+{
+	std::string filename = "scripts/" + name;
+	if (fs::exists(filename))
+	{
+		std::ifstream t(filename);
+		std::string script;
+
+		t.seekg(0, std::ios::end);
+		script.reserve(t.tellg());
+		t.seekg(0, std::ios::beg);
+
+		script.assign((std::istreambuf_iterator<char>(t)),
+			std::istreambuf_iterator<char>());
+
+		return script;
+	}
+}
+
 void ScriptParser::runScript(std::string & script, bool isUtf8)
 {
 	vecLexems vLexs = parseScript(script, isUtf8);

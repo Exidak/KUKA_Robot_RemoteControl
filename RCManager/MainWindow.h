@@ -13,6 +13,7 @@ public:
 	void setupUi();
 private:
 	void activateButtons(bool b);
+	void loadFromFile(QString filepath, bool isSaved = false);
 private slots:
 	void slotPressConnect();
 	void slotBrowseScript();

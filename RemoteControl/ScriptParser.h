@@ -17,6 +17,7 @@ public:
 
 	bool connect();
 	std::vector<std::string> getSavedScripts();
+	std::string getScriptText(std::string name);
 
 	void runScript(std::string &script, bool isUtf8 = true);
 	void runScriptFromFile(std::string path, bool isUtf8 = true);

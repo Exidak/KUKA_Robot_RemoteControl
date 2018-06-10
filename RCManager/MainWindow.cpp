@@ -115,6 +115,20 @@ void MainWindow::activateButtons(bool b)
 	btnRun->setEnabled(b);
 }
 
+void MainWindow::loadFromFile(QString filepath, bool isSaved)
+{
+	QFile file(filepath);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QMessageBox::critical(this, QString::fromLocal8Bit("Ошибка"), 
+			QString::fromLocal8Bit("Не удается открыть файл\n") + filepath +"\n"+ file.errorString(), QMessageBox::Ok, QMessageBox::Ok);
+	}
+	while (!file.atEnd()) {
+		QByteArray line = file.readLine();
+		textScript->append(QString::fromLocal8Bit(line));
+	}
+}
+
 void MainWindow::slotBrowseScript()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, QString::fromLocal8Bit("Открыть скрипт"), "", QString::fromLocal8Bit("Скрипт (*.txt)"));
@@ -123,14 +137,7 @@ void MainWindow::slotBrowseScript()
 
 void MainWindow::slotLoadFileScript()
 {
-	QFile file(leFileScript->text());
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		QMessageBox::critical(this, QString::fromLocal8Bit("Ошибка"), QString::fromLocal8Bit("Не удается открыть файл"), QMessageBox::Ok, QMessageBox::Ok);
-
-	while (!file.atEnd()) {
-		QByteArray line = file.readLine();
-		textScript->append(line);
-	}
+	loadFromFile(leFileScript->text());
 }
 
 void MainWindow::slotLoadSavedScript()
@@ -138,8 +145,9 @@ void MainWindow::slotLoadSavedScript()
 	QListWidgetItem *cur = lstScripts->currentItem();
 	if (cur)
 	{
-		std::string scr_path = "script\\" + cur->text().toStdString();
-		m_scr->runScript(scr_path, true);
+		QString scr_path = "scripts\\";
+		scr_path += cur->text();
+		loadFromFile(scr_path);
 	}
 	else
 		QMessageBox::warning(this, QString::fromLocal8Bit("Ошибка"), QString::fromLocal8Bit("Выберите снчала скрипт"), QMessageBox::Ok, QMessageBox::Ok);
@@ -147,7 +155,8 @@ void MainWindow::slotLoadSavedScript()
 
 void MainWindow::slotRunScript()
 {
-	// TODO
+	std::string script_text = textScript->toPlainText().toStdString();
+	m_scr->runScript(script_text);
 }
 
 void MainWindow::slotPressConnect()
