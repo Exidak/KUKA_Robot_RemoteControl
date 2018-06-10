@@ -125,7 +125,10 @@ void MainWindow::loadFromFile(QString filepath, bool isSaved)
 	}
 	while (!file.atEnd()) {
 		QByteArray line = file.readLine();
-		textScript->append(QString::fromLocal8Bit(line));
+		if (isSaved)
+			textScript->append(QString::fromLocal8Bit(line));
+		else
+			textScript->append(line);
 	}
 }
 
@@ -147,7 +150,7 @@ void MainWindow::slotLoadSavedScript()
 	{
 		QString scr_path = "scripts\\";
 		scr_path += cur->text();
-		loadFromFile(scr_path);
+		loadFromFile(scr_path, true);
 	}
 	else
 		QMessageBox::warning(this, QString::fromLocal8Bit("Ошибка"), QString::fromLocal8Bit("Выберите снчала скрипт"), QMessageBox::Ok, QMessageBox::Ok);
@@ -156,47 +159,83 @@ void MainWindow::slotLoadSavedScript()
 void MainWindow::slotRunScript()
 {
 	btnRun->setEnabled(false);
-	std::string script_text = textScript->toPlainText().toStdString();
-	m_scr->runScript(script_text);
-	ECommand curLextype;
-	int position;
-	while (m_scr->execNextCommand(curLextype, position))
+	try
 	{
-		int count2Highlight = 0;
-		switch (curLextype)
+		std::string script_text = textScript->toPlainText().toStdString();
+		m_scr->runScript(script_text);
+		ECommand curLextype;
+		int position;
+		while (m_scr->execNextCommand(curLextype, position))
 		{
-		case RC_CMD_FUNCTION:
-		case RC_CMD_WAIT:
-			count2Highlight = 2;
-			break;
-		case RC_CMD_MOVE:
-		case RC_CMD_ROTATE:
-			count2Highlight = 3;
-			break;
-		case RC_CMD_STOP:
-			count2Highlight = 1;
-			break;
+			int count2Highlight = 0;
+			switch (curLextype)
+			{
+			case RC_CMD_FUNCTION:
+			case RC_CMD_WAIT:
+				count2Highlight = 2;
+				break;
+			case RC_CMD_MOVE:
+			case RC_CMD_ROTATE:
+				count2Highlight = 3;
+				break;
+			case RC_CMD_STOP:
+				count2Highlight = 1;
+				break;
+			}
+
+			QString scrtext = textScript->toPlainText();
+			textScript->clear();
+			textScript->setText(scrtext);
+			// find position 
+			int pos_hl1 = 0;
+			int pos_hl2;
+			while (position)
+			{
+				pos_hl1 = scrtext.indexOf(' ', pos_hl1 + 1);
+				position--;
+			}
+			pos_hl2 = pos_hl1;
+			while (count2Highlight)
+			{
+				pos_hl2 = scrtext.indexOf(' ', pos_hl2 + 1);
+				count2Highlight--;
+			}
+			QTextCharFormat fmt;
+			fmt.setBackground(Qt::yellow);
+
+			QTextCursor cursor(textScript->document());
+			cursor.setPosition(pos_hl1, QTextCursor::MoveAnchor);
+			cursor.setPosition(pos_hl2, QTextCursor::KeepAnchor);
+			cursor.setCharFormat(fmt);
+			qApp->processEvents();
 		}
+		QString scrtext = textScript->toPlainText();
+		textScript->clear();
+		textScript->setText(scrtext);
+	}
+	catch (ScriptParser::ScriptError err)
+	{
+		QMessageBox::critical(this, QString::fromLocal8Bit("Синтаксическая ошибка"), QString::fromLocal8Bit("Ошибка синтаксиса в скрипте.\nПозиция: ") + QString::number(err.pos), QMessageBox::Ok, QMessageBox::Ok);
 
 		QString scrtext = textScript->toPlainText();
 		textScript->clear();
 		textScript->setText(scrtext);
-		// find position 
+
+		int position = err.pos;
 		int pos_hl1 = 0;
 		int pos_hl2;
 		while (position)
 		{
-			pos_hl1 = scrtext.indexOf(' ', pos_hl1+1);
+			pos_hl1 = scrtext.indexOf(' ', pos_hl1 + 1);
 			position--;
 		}
 		pos_hl2 = pos_hl1;
-		while (count2Highlight)
-		{
-			pos_hl2 = scrtext.indexOf(' ', pos_hl2+1);
-			count2Highlight--;
-		}
+		pos_hl2 = scrtext.indexOf(' ', pos_hl2 + 1);
+		if (pos_hl2 == -1)
+			pos_hl2 = scrtext.size();
+
 		QTextCharFormat fmt;
-		fmt.setBackground(Qt::yellow);
+		fmt.setBackground(Qt::red);
 
 		QTextCursor cursor(textScript->document());
 		cursor.setPosition(pos_hl1, QTextCursor::MoveAnchor);
@@ -205,9 +244,6 @@ void MainWindow::slotRunScript()
 		qApp->processEvents();
 	}
 	btnRun->setEnabled(true);
-	QString scrtext = textScript->toPlainText();
-	textScript->clear();
-	textScript->setText(scrtext);
 }
 
 void MainWindow::slotPressConnect()
