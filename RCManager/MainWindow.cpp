@@ -155,8 +155,59 @@ void MainWindow::slotLoadSavedScript()
 
 void MainWindow::slotRunScript()
 {
+	btnRun->setEnabled(false);
 	std::string script_text = textScript->toPlainText().toStdString();
 	m_scr->runScript(script_text);
+	ECommand curLextype;
+	int position;
+	while (m_scr->execNextCommand(curLextype, position))
+	{
+		int count2Highlight = 0;
+		switch (curLextype)
+		{
+		case RC_CMD_FUNCTION:
+		case RC_CMD_WAIT:
+			count2Highlight = 2;
+			break;
+		case RC_CMD_MOVE:
+		case RC_CMD_ROTATE:
+			count2Highlight = 3;
+			break;
+		case RC_CMD_STOP:
+			count2Highlight = 1;
+			break;
+		}
+
+		QString scrtext = textScript->toPlainText();
+		textScript->clear();
+		textScript->setText(scrtext);
+		// find position 
+		int pos_hl1 = 0;
+		int pos_hl2;
+		while (position)
+		{
+			pos_hl1 = scrtext.indexOf(' ', pos_hl1+1);
+			position--;
+		}
+		pos_hl2 = pos_hl1;
+		while (count2Highlight)
+		{
+			pos_hl2 = scrtext.indexOf(' ', pos_hl2+1);
+			count2Highlight--;
+		}
+		QTextCharFormat fmt;
+		fmt.setBackground(Qt::yellow);
+
+		QTextCursor cursor(textScript->document());
+		cursor.setPosition(pos_hl1, QTextCursor::MoveAnchor);
+		cursor.setPosition(pos_hl2, QTextCursor::KeepAnchor);
+		cursor.setCharFormat(fmt);
+		qApp->processEvents();
+	}
+	btnRun->setEnabled(true);
+	QString scrtext = textScript->toPlainText();
+	textScript->clear();
+	textScript->setText(scrtext);
 }
 
 void MainWindow::slotPressConnect()

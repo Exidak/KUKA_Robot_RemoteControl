@@ -83,59 +83,9 @@ std::string ScriptParser::getScriptText(std::string name)
 
 void ScriptParser::runScript(std::string & script, bool isUtf8)
 {
-	vecLexems vLexs = parseScript(script, isUtf8);
-
-	vecLexems::iterator lexEnd = vLexs.end();
-	for (vecLexems::iterator lexem = vLexs.begin(); lexem != lexEnd; ++lexem)
-	{
-		// every command have to begin with reserved word
-		if ((*lexem)->type == LexReserved)
-		{
-			ReservedLexem *reslex = static_cast<ReservedLexem*>(lexem->get());
-			switch (reslex->com)
-			{
-				case RC_CMD_FUNCTION:
-					lexem++;
-					processFunction(lexem, lexEnd);
-					break;
-				case RC_CMD_MOVE:
-					lexem++;
-					processMove(lexem, lexEnd);
-					break;
-				case RC_CMD_ROTATE:
-					lexem++;
-					processRotate(lexem, lexEnd);
-					break;
-				case RC_CMD_STOP:
-					m_com->execCommand(RC_CMD_STOP_MOVEMENT);
-					break;
-				case RC_CMD_WAIT:
-					lexem++;
-					processWait(lexem, lexEnd);
-					break;
-				case RC_CMD_ARM_PLATFORM_ROTATE:
-					lexem++;
-					m_com->execCommand(RC_CMD_ARM_PLATFORM_ROTATE);
-					break;
-				default:
-					throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
-			}
-			continue;
-		}
-		else if ((*lexem)->type == LexWord)// or it can be presaved script
-		{
-			WordLexem *reslex = static_cast<WordLexem*>(lexem->get());
-			std::string name = reslex->str;
-			//check if script exist
-			std::string filename = "scripts/" + name;
-			if (fs::exists(filename))
-				runScriptFromFile(filename, false);
-			else
-				throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
-		}
-		else
-			throw ScriptError((*lexem)->position, RC_ERR_SCRIPT_SYNTAX);
-	}
+	vLexs = parseScript(script, isUtf8);
+	lexEnd = vLexs.end();
+	lexem = vLexs.begin();
 }
 
 void ScriptParser::runScriptFromFile(std::string path, bool isUtf8)
@@ -153,7 +103,66 @@ void ScriptParser::runScriptFromFile(std::string path, bool isUtf8)
 	runScript(script, isUtf8);
 }
 
-ScriptParser::vecLexems ScriptParser::parseScript(std::string & script, bool isUtf8)
+bool ScriptParser::execNextCommand(ECommand & type, int &pos)
+{
+	pos = std::distance(vLexs.begin(), lexem);
+	if (lexem != lexEnd)
+	{
+		// every command have to begin with reserved word
+		if ((*lexem)->type == LexReserved)
+		{
+			ReservedLexem *reslex = static_cast<ReservedLexem*>(lexem->get());
+			type = reslex->com;
+			switch (reslex->com)
+			{
+			case RC_CMD_FUNCTION:
+				lexem++;
+				processFunction(lexem, lexEnd);
+				break;
+			case RC_CMD_MOVE:
+				lexem++;
+				processMove(lexem, lexEnd);
+				break;
+			case RC_CMD_ROTATE:
+				lexem++;
+				processRotate(lexem, lexEnd);
+				break;
+			case RC_CMD_STOP:
+				m_com->execCommand(RC_CMD_STOP_MOVEMENT);
+				break;
+			case RC_CMD_WAIT:
+				lexem++;
+				processWait(lexem, lexEnd);
+				break;
+			case RC_CMD_ARM_PLATFORM_ROTATE:
+				lexem++;
+				m_com->execCommand(RC_CMD_ARM_PLATFORM_ROTATE);
+				break;
+			default:
+				throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
+			}
+		}
+		else if ((*lexem)->type == LexWord)// or it can be presaved script
+		{
+			WordLexem *reslex = static_cast<WordLexem*>(lexem->get());
+			std::string name = reslex->str;
+			//check if script exist
+			std::string filename = "scripts/" + name;
+			if (fs::exists(filename))
+				runScriptFromFile(filename, false);
+			else
+				throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
+		}
+		else
+			throw ScriptError((*lexem)->position, RC_ERR_SCRIPT_SYNTAX);
+
+		++lexem;
+		return true;
+	}
+	return false;
+}
+
+vecLexems ScriptParser::parseScript(std::string & script, bool isUtf8)
 {
 	vecLexems vLexs;
 	int pos = 0;
