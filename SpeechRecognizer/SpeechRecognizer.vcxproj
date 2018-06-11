@@ -20,14 +20,14 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{A523EC88-CF10-4D65-8B9D-5F46B6DE5DB5}</ProjectGuid>
+    <ProjectGuid>{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>RemoteControl</RootNamespace>
+    <RootNamespace>SpeechRecognizer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -88,13 +88,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\include\;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\remoteApi\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR32)include;$(QTDIR32)include\QtCore;$(QTDIR32)include\QtGui;$(QTDIR32)include\QtNetwork;$(QTDIR32)include\QtWidgets;..\RemoteControl;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\include\;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\remoteApi\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\Debug;$(QTLIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;Qt5Networkd.lib;Qt5Multimediad.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -148,42 +150,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ComInterpreter.h" />
-    <ClInclude Include="commands.h" />
-    <ClInclude Include="error_codes.h" />
-    <ClInclude Include="extApi.h" />
-    <ClInclude Include="extApiPlatform.h" />
-    <ClInclude Include="KUKAPilot.h" />
-    <ClInclude Include="ScriptParser.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="str_helper.h" />
     <ClInclude Include="targetver.h" />
+    <CustomBuild Include="VoiceRecordDlg.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR32)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\moc_%(Filename).cpp</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC: $(QTDIR)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Message>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ComInterpreter.cpp" />
-    <ClCompile Include="extApi.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="extApiPlatform.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="KUKAPilot.cpp" />
-    <ClCompile Include="RemoteControl.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ScriptParser.cpp" />
-    <ClCompile Include="shared_memory.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="SpeechRecognizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClCompile Include="VoiceRecordDlg.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

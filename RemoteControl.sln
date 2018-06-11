@@ -10,6 +10,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RCManager", "RCManager\RCMa
 		{A523EC88-CF10-4D65-8B9D-5F46B6DE5DB5} = {A523EC88-CF10-4D65-8B9D-5F46B6DE5DB5}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{F33179ED-8355-4A1D-8ED6-8D44359C3BA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{0559AD86-0BAF-4A14-8DC1-F1115E62938A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpeechRecognizer", "SpeechRecognizer\SpeechRecognizer.vcxproj", "{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,9 +40,22 @@ Global
 		{D4938E36-5348-4401-8885-936D55667A69}.Release|x64.Build.0 = Release|x64
 		{D4938E36-5348-4401-8885-936D55667A69}.Release|x86.ActiveCfg = Release|Win32
 		{D4938E36-5348-4401-8885-936D55667A69}.Release|x86.Build.0 = Release|Win32
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Debug|x64.ActiveCfg = Debug|x64
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Debug|x64.Build.0 = Debug|x64
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Debug|x86.ActiveCfg = Debug|Win32
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Debug|x86.Build.0 = Debug|Win32
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Release|x64.ActiveCfg = Release|x64
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Release|x64.Build.0 = Release|x64
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Release|x86.ActiveCfg = Release|Win32
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A523EC88-CF10-4D65-8B9D-5F46B6DE5DB5} = {0559AD86-0BAF-4A14-8DC1-F1115E62938A}
+		{D4938E36-5348-4401-8885-936D55667A69} = {F33179ED-8355-4A1D-8ED6-8D44359C3BA2}
+		{32F6DA86-96C8-4A73-B23A-9F9E8CBC3F06} = {F33179ED-8355-4A1D-8ED6-8D44359C3BA2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A6D64D-5C6F-4090-A59C-0C11802845FC}
