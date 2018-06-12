@@ -3,7 +3,7 @@ class YaSpeechKit : public QObject
 {
 	Q_OBJECT
 public:
-	YaSpeechKit();
+	YaSpeechKit(QObject *parent = 0);
 
 	void requestRecognition(const QByteArray &arr);
 signals:

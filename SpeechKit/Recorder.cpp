@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Recorder.h"
+#include "tmp\moc_Recorder.cpp"
 
 
 Recorder::Recorder(QObject *parent)

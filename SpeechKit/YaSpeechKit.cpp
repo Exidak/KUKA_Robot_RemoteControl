@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "YaSpeechKit.h"
+#include "tmp\moc_YaSpeechKit.cpp"
 
 
-YaSpeechKit::YaSpeechKit()
+YaSpeechKit::YaSpeechKit(QObject *parent)
 {
 	_manager = new QNetworkAccessManager(this);
 	connect(_manager, &QNetworkAccessManager::finished, this, &YaSpeechKit::slotGetReply);
@@ -32,13 +32,25 @@ void YaSpeechKit::slotGetReply(QNetworkReply * reply)
 		QString idealQuery;
 		while (!element.atEnd()) {
 			element.readNext();
+			if (element.name() == "recognitionResults")
+			{
+				if (element.attributes().count())
+				{
+					QXmlStreamAttribute attr = element.attributes().at(0);
+					if (attr.value().toDouble() == 0)
+						emit sigError(QString::fromLocal8Bit("Невозможно распознать"));
+				}
+			}
 			if (element.tokenType() != QXmlStreamReader::StartElement) continue;
 			if (element.name() != "variant") continue;
-			QXmlStreamAttribute attr = element.attributes().at(0);
-			if (attr.value().toDouble() >= idealConfidence) {
-				idealConfidence = attr.value().toDouble();
-				element.readNext();
-				idealQuery = element.text().toString();
+			if (element.attributes().count())
+			{
+				QXmlStreamAttribute attr = element.attributes().at(0);
+				if (attr.value().toDouble() >= idealConfidence) {
+					idealConfidence = attr.value().toDouble();
+					element.readNext();
+					idealQuery = element.text().toString();
+				}
 			}
 		}
 		if (element.hasError())

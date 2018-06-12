@@ -90,13 +90,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(QTDIR32)include;$(QTDIR32)include\QtCore;$(QTDIR32)include\QtGui;$(QTDIR32)include\QtNetwork;$(QTDIR32)include\QtWidgets;..\RemoteControl;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\include\;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\remoteApi\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTDIR32)include;$(QTDIR32)include\QtCore;$(QTDIR32)include\QtGui;$(QTDIR32)include\QtNetwork;$(QTDIR32)include\QtWidgets;..\SpeechKit;..\RemoteControl;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\include\;c:\Program Files\V-REP3\V-REP_PRO_EDU\programming\remoteApi\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\Debug;$(QTLIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;Qt5Networkd.lib;RemoteControl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5WinExtrasd.lib;Qt5Networkd.lib;Qt5Multimediad.lib;RemoteControl.lib;SpeechKit.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -155,12 +155,18 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC: $(QTDIR)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\moc_%(Filename).cpp</Outputs>
     </CustomBuild>
+    <CustomBuild Include="SpeechDlg.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR32)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC: $(QTDIR)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="RCManager.cpp" />
+    <ClCompile Include="SpeechDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

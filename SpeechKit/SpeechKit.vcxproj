@@ -148,10 +148,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Recorder.h" />
+    <CustomBuild Include="Recorder.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR32)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC: $(QTDIR)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="YaSpeechKit.h" />
+    <CustomBuild Include="YaSpeechKit.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR32)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC: $(QTDIR)\bin\moc.exe -I"..\..\common" %(Identity) -o tmp\moc_%(Filename).cpp</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">tmp\moc_%(Filename).cpp</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Recorder.cpp" />

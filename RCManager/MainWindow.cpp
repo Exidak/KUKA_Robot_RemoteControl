@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "tmp\moc_MainWindow.cpp"
 #include "ScriptParser.h"
+#include "SpeechDlg.h"
 
 MainWindow::MainWindow(QObject *parent)
 {
@@ -48,6 +49,7 @@ void MainWindow::setupUi()
 	textScript = new QTextEdit(gbView);
 	QHBoxLayout *hbView = new QHBoxLayout(gbView);
 	btnRun = new QPushButton(gbView);
+	btnSpeech = new QPushButton(gbView);
 
 	gbConnect->setTitle(QString::fromLocal8Bit("Соединение"));
 	lblStatusHed->setText(QString::fromLocal8Bit("Статус"));
@@ -63,12 +65,14 @@ void MainWindow::setupUi()
 
 	gbView->setTitle(QString::fromLocal8Bit("Скрипт"));
 	btnRun->setText(QString::fromLocal8Bit("Пуск"));
+	btnSpeech->setText(QString::fromLocal8Bit("Голосовой ввод"));
 
 	connect(btnConnect, &QPushButton::clicked, this, &MainWindow::slotPressConnect);
 	connect(btnBrowse, &QPushButton::clicked, this, &MainWindow::slotBrowseScript);
 	connect(btnFileLoad, &QPushButton::clicked, this, &MainWindow::slotLoadFileScript);
 	connect(btnScrLoad, &QPushButton::clicked, this, &MainWindow::slotLoadSavedScript);
 	connect(btnRun, &QPushButton::clicked, this, &MainWindow::slotRunScript);
+	connect(btnSpeech, &QPushButton::clicked, this, &MainWindow::slotSpeechRec);
 
 	hlCon->addStretch(1);
 	hlCon->addWidget(btnConnect);
@@ -90,6 +94,7 @@ void MainWindow::setupUi()
 	vlScr->addLayout(hbScr);
 	gridLayout->addWidget(gbScripts, 1, 0);
 
+	hbView->addWidget(btnSpeech);
 	hbView->addStretch(1);
 	hbView->addWidget(btnRun);
 	vlView->addWidget(textScript);
@@ -244,6 +249,16 @@ void MainWindow::slotRunScript()
 		qApp->processEvents();
 	}
 	btnRun->setEnabled(true);
+}
+
+void MainWindow::slotSpeechRec()
+{
+	SpeechDlg *dlg = new SpeechDlg(this);
+	if (dlg->exec() == QDialog::Accepted)
+	{
+		textScript->setText(dlg->getResult());
+	}
+	delete dlg;
 }
 
 void MainWindow::slotPressConnect()

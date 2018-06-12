@@ -20,6 +20,7 @@ private slots:
 	void slotLoadFileScript();
 	void slotLoadSavedScript();
 	void slotRunScript();
+	void slotSpeechRec();
 protected:
 	QLabel * lblStatus;
 	QPushButton * btnConnect;
@@ -30,6 +31,7 @@ protected:
 	QPushButton *btnScrLoad;
 	QTextEdit *textScript;
 	QPushButton *btnRun;
+	QPushButton *btnSpeech;
 
 	ScriptParser *m_scr;
 };
