@@ -20,5 +20,7 @@ protected:
 	QPushButton *btnRecordStart;
 	QPushButton *btnRecordPause;
 	QPushButton *btnRecordStop;
+
+	QByteArray bufData;
 };
 

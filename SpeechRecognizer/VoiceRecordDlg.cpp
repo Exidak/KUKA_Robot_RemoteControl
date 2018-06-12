@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <algorithm>
 #include "tmp\moc_VoiceRecordDlg.cpp"
 
 
@@ -12,9 +13,9 @@ VoiceRecordDlg::VoiceRecordDlg(QObject *parent)
 
 	m_audioRecorder->setEncodingSettings(audioSettings);
 
-	QString fileName = "/E:/programming/Robot/RemoteControl/RemoteControl/SpeechRecognizer/1.wav";//QFileDialog::getSaveFileName();
+	//QString fileName = "/E:/programming/Robot/RemoteControl/RemoteControl/SpeechRecognizer/1.wav";//QFileDialog::getSaveFileName();
 	//qDebug() << fileName;
-	m_audioRecorder->setOutputLocation(QUrl::fromLocalFile(fileName));
+	//m_audioRecorder->setOutputLocation(QUrl::fromLocalFile(fileName));
 
 	QAudioProbe *audioProbe = new QAudioProbe(this);
 	if (audioProbe->setSource(m_audioRecorder)) {
@@ -93,8 +94,16 @@ void VoiceRecordDlg::slotDisplayErrorMessage()
 	QMessageBox::critical(this, QString::fromLocal8Bit("Îøèáêà"), m_audioRecorder->errorString(), QMessageBox::Ok, QMessageBox::Ok);
 }
 
+
+void ReverseBytes(void *start, int size)
+{
+	char *istart = (char*)start, *iend = istart + size;
+	std::reverse(istart, iend);
+}
+
 void VoiceRecordDlg::slotSent2Recognize()
 {
+	/*
 	QNetworkAccessManager *manager = new QNetworkAccessManager(this);
 	connect(manager, &QNetworkAccessManager::finished, this, &VoiceRecordDlg::slotGetReply);
 	QFile *file = new QFile("E:/programming/Robot/RemoteControl/RemoteControl/SpeechRecognizer/1.wav");
@@ -112,6 +121,43 @@ void VoiceRecordDlg::slotSent2Recognize()
 		manager->post(request, file->readAll());
 		file->close();
 	}
+	*/
+
+	// add header to bufData
+	QByteArray header;
+	QDataStream stream(&header, QIODevice::WriteOnly);
+	int sizeBuf = int(bufData.size() + 36);
+	ReverseBytes(&sizeBuf, 4);
+	int sizeData = bufData.size();
+	ReverseBytes(&sizeData, 4);
+	stream << 0x52494646; // RIFF
+	stream << sizeBuf; // size of  bufData + 44-8
+	stream << 0x57415645; // WAWE 
+	stream << 0x666d7420; // fmt 
+	stream << 0x10000000; // size chunk
+	stream << (short)0x0100; // PCM format
+	stream << (short)0x0100; // channels
+	stream << 0x80bb0000; // simple rate
+	stream << 0x00770100; // byte rate
+	stream << (short)0x0200; // blockAlign
+	stream << (short)0x1000; // bitsPerSample
+	stream << 0x64617461; // data
+	stream << sizeData;// subchunk2Size
+	bufData.prepend(header); // header 
+
+	QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+	connect(manager, &QNetworkAccessManager::finished, this, &VoiceRecordDlg::slotGetReply);
+	QUrlQuery query;
+	query.addQueryItem("key", "5abce851-497a-4cfd-8121-8dc38d25870f");
+	query.addQueryItem("uuid", "01ae13cb744628b58fb536d496daa1e6");
+	query.addQueryItem("topic", "queries");
+	query.addQueryItem("lang", "ru-RU");
+	QUrl url("https://asr.yandex.net/asr_xml");
+	url.setQuery(query);
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "audio/x-wav");
+	request.setHeader(QNetworkRequest::ContentLengthHeader, bufData.size());
+	manager->post(request, bufData);
 }
 
 void VoiceRecordDlg::slotGetReply(QNetworkReply * reply)
@@ -119,7 +165,7 @@ void VoiceRecordDlg::slotGetReply(QNetworkReply * reply)
 	if (reply->error() == QNetworkReply::NoError)
 	{
 		QByteArray response = reply->readAll();
-		qDebug() << response;
+		qDebug() << QString(response);
 	}
 	else // handle error
 	{
@@ -129,5 +175,5 @@ void VoiceRecordDlg::slotGetReply(QNetworkReply * reply)
 
 void VoiceRecordDlg::slotChangeAudioLevel(const QAudioBuffer &buf)
 {
-
+	bufData.append(buf.constData<char>(), buf.byteCount());
 }
