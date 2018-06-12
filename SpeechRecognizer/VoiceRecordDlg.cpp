@@ -13,10 +13,6 @@ VoiceRecordDlg::VoiceRecordDlg(QObject *parent)
 
 	m_audioRecorder->setEncodingSettings(audioSettings);
 
-	//QString fileName = "/E:/programming/Robot/RemoteControl/RemoteControl/SpeechRecognizer/1.wav";//QFileDialog::getSaveFileName();
-	//qDebug() << fileName;
-	//m_audioRecorder->setOutputLocation(QUrl::fromLocalFile(fileName));
-
 	QAudioProbe *audioProbe = new QAudioProbe(this);
 	if (audioProbe->setSource(m_audioRecorder)) {
 		// Probing succeeded, audioProbe->isValid() should be true.
@@ -49,6 +45,8 @@ void VoiceRecordDlg::initDialog()
 	//btnRecordStop->setEnabled(false);
 	QPushButton *btnSend = new QPushButton(this);
 	btnSend->setText(QString::fromLocal8Bit("Распознать"));
+	textAnswer = new QTextEdit(this);
+	textAnswer->setVisible(false);
 
 	connect(btnRecordStart, &QPushButton::clicked, m_audioRecorder, &QAudioRecorder::record);
 	connect(btnRecordPause, &QPushButton::clicked, m_audioRecorder, &QAudioRecorder::pause);
@@ -60,6 +58,7 @@ void VoiceRecordDlg::initDialog()
 	hbButtons->addWidget(btnRecordStop);
 	ltMain->addLayout(hbButtons);
 	ltMain->addWidget(btnSend);
+	ltMain->addWidget(textAnswer);
 }
 
 void VoiceRecordDlg::slotStateChanged(QMediaRecorder::State state)
@@ -103,26 +102,6 @@ void ReverseBytes(void *start, int size)
 
 void VoiceRecordDlg::slotSent2Recognize()
 {
-	/*
-	QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-	connect(manager, &QNetworkAccessManager::finished, this, &VoiceRecordDlg::slotGetReply);
-	QFile *file = new QFile("E:/programming/Robot/RemoteControl/RemoteControl/SpeechRecognizer/1.wav");
-	if (file->open(QIODevice::ReadOnly)) {
-		QUrlQuery query;
-		query.addQueryItem("key", "5abce851-497a-4cfd-8121-8dc38d25870f");
-		query.addQueryItem("uuid", "01ae13cb744628b58fb536d496daa1e6");
-		query.addQueryItem("topic", "queries");
-		query.addQueryItem("lang", "ru-RU");
-		QUrl url("https://asr.yandex.net/asr_xml");
-		url.setQuery(query);
-		QNetworkRequest request(url);
-		request.setHeader(QNetworkRequest::ContentTypeHeader, "audio/x-wav");
-		request.setHeader(QNetworkRequest::ContentLengthHeader, file->size());
-		manager->post(request, file->readAll());
-		file->close();
-	}
-	*/
-
 	// add header to bufData
 	QByteArray header;
 	QDataStream stream(&header, QIODevice::WriteOnly);
@@ -165,11 +144,30 @@ void VoiceRecordDlg::slotGetReply(QNetworkReply * reply)
 	if (reply->error() == QNetworkReply::NoError)
 	{
 		QByteArray response = reply->readAll();
-		qDebug() << QString(response);
+		textAnswer->setVisible(true);
+		qDebug() << response;
+
+		QXmlStreamReader element(response);
+		double idealConfidence = 0;
+		QString idealQuery;
+		while (!element.atEnd()) {
+			element.readNext();
+			if (element.tokenType() != QXmlStreamReader::StartElement) continue;
+			if (element.name() != "variant") continue;
+			QXmlStreamAttribute attr = element.attributes().at(0);
+			if (attr.value().toDouble() >= idealConfidence) {
+				idealConfidence = attr.value().toDouble();
+				element.readNext();
+				idealQuery = element.text().toString();
+			}
+		}
+		if (element.hasError()) 
+			textAnswer->setText(element.errorString());
+		textAnswer->setText(idealQuery);
 	}
 	else // handle error
 	{
-		qDebug() << reply->errorString();
+		QMessageBox::critical(this, QString::fromLocal8Bit("Ошибка"), reply->errorString(), QMessageBox::Ok, QMessageBox::Ok);
 	}
 }
 
