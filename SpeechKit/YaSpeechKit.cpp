@@ -15,9 +15,13 @@ YaSpeechKit::YaSpeechKit(QObject *parent)
 	QUrl url("https://asr.yandex.net/asr_xml");
 	url.setQuery(query);
 
+	QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+	config.setProtocol(QSsl::SslV3);
+
 	request.setUrl(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "audio/x-wav");
 	request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+	request.setSslConfiguration(config);
 }
 
 void YaSpeechKit::slotGetReply(QNetworkReply * reply)
@@ -61,6 +65,11 @@ void YaSpeechKit::slotGetReply(QNetworkReply * reply)
 	{
 		emit sigError( reply->errorString());
 	}
+}
+
+void YaSpeechKit::slotIgnoreSSLErr(QNetworkReply *reply, const QList<QSslError> &errors)
+{
+	reply->ignoreSslErrors();
 }
 
 void YaSpeechKit::requestRecognition(const QByteArray & bufData)

@@ -11,6 +11,7 @@ signals:
 	void sigComplete(const QString &err);
 private slots:
 	void slotGetReply(QNetworkReply * reply);
+	void slotIgnoreSSLErr(QNetworkReply *reply, const QList<QSslError> &errors);
 protected:
 	QNetworkAccessManager * _manager;
 	QNetworkRequest request;
