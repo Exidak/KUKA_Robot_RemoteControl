@@ -17,7 +17,7 @@ YaSpeechKit::YaSpeechKit(QObject *parent)
 
 	request.setUrl(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "audio/x-wav");
-	
+	request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 }
 
 void YaSpeechKit::slotGetReply(QNetworkReply * reply)
