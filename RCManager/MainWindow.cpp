@@ -257,6 +257,7 @@ void MainWindow::slotSpeechRec()
 	if (dlg->exec() == QDialog::Accepted)
 	{
 		textScript->setText(dlg->getResult());
+		slotRunScript();
 	}
 	delete dlg;
 }

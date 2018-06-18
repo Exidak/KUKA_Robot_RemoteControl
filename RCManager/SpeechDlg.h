@@ -22,12 +22,14 @@ private slots:
 protected:
 	Recorder * _recorder;
 	YaSpeechKit *_speechKit;
-
-	QPushButton * btnRecordStart;
-	QPushButton *btnRecordStop;
-	QPushButton *btnSend;
-	QTextEdit *textAnswer;
+	
+	//QPushButton * btnRecordStart;
+	//QPushButton *btnRecordStop;
+	//QPushButton *btnSend;
+	//QTextEdit *textAnswer;
 
 	QByteArray recorded_data;
+	QLabel *lblStatus;
+	QString strResult;
 };
 
