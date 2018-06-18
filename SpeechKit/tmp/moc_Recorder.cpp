@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'Recorder.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.9.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.10.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'Recorder.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.9.0. It"
+#error "This file was generated using the moc from 5.10.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -110,31 +110,30 @@ void Recorder::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
-        void **func = reinterpret_cast<void **>(_a[1]);
         {
             typedef void (Recorder::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Recorder::sigRecordStarted)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Recorder::sigRecordStarted)) {
                 *result = 0;
                 return;
             }
         }
         {
             typedef void (Recorder::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Recorder::sigRecordStoped)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Recorder::sigRecordStoped)) {
                 *result = 1;
                 return;
             }
         }
         {
             typedef void (Recorder::*_t)();
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Recorder::sigRecordPaused)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Recorder::sigRecordPaused)) {
                 *result = 2;
                 return;
             }
         }
         {
             typedef void (Recorder::*_t)(const QString & );
-            if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&Recorder::sigRecordError)) {
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&Recorder::sigRecordError)) {
                 *result = 3;
                 return;
             }
@@ -142,7 +141,7 @@ void Recorder::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
     }
 }
 
-const QMetaObject Recorder::staticMetaObject = {
+QT_INIT_METAOBJECT const QMetaObject Recorder::staticMetaObject = {
     { &QObject::staticMetaObject, qt_meta_stringdata_Recorder.data,
       qt_meta_data_Recorder,  qt_static_metacall, nullptr, nullptr}
 };
@@ -157,7 +156,7 @@ void *Recorder::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_Recorder.stringdata0))
-        return static_cast<void*>(const_cast< Recorder*>(this));
+        return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
