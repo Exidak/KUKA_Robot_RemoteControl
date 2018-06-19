@@ -200,15 +200,21 @@ void MainWindow::slotRunScript()
 			QStringList::iterator sIt = list.begin();
 			while (position)
 			{
-				pos_hl1 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl1 + 1);
-				sIt++;
+				if (sIt != list.end())
+				{
+					pos_hl1 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl1 + 1);
+					sIt++;
+				}
 				position--;
 			}
 			pos_hl2 = pos_hl1;
 			while (count2Highlight)
 			{
-				pos_hl2 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl2 + 1);
-				sIt++;
+				if (sIt != list.end())
+				{
+					pos_hl2 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl2 + 1);
+					sIt++;
+				}
 				count2Highlight--;
 			}
 			QTextCharFormat fmt;
