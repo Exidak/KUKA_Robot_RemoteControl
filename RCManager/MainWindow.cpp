@@ -190,24 +190,31 @@ void MainWindow::slotRunScript()
 
 			QString scrtext = textScript->toPlainText();
 			textScript->clear();
-			textScript->setText(scrtext);
+			
+			QRegExp separator("( |\n|=r)");
+			QStringList list = scrtext.split(separator, QString::SkipEmptyParts);
+
 			// find position 
 			int pos_hl1 = 0;
 			int pos_hl2;
+			QStringList::iterator sIt = list.begin();
 			while (position)
 			{
-				pos_hl1 = scrtext.indexOf(' ', pos_hl1 + 1);
+				pos_hl1 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl1 + 1);
+				sIt++;
 				position--;
 			}
 			pos_hl2 = pos_hl1;
 			while (count2Highlight)
 			{
-				pos_hl2 = scrtext.indexOf(' ', pos_hl2 + 1);
+				pos_hl2 += sIt->size() + 1;//scrtext.indexOf(' ', pos_hl2 + 1);
+				sIt++;
 				count2Highlight--;
 			}
 			QTextCharFormat fmt;
 			fmt.setBackground(Qt::yellow);
 
+			textScript->setText(scrtext);
 			QTextCursor cursor(textScript->document());
 			cursor.setPosition(pos_hl1, QTextCursor::MoveAnchor);
 			cursor.setPosition(pos_hl2, QTextCursor::KeepAnchor);

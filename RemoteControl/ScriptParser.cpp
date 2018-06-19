@@ -83,9 +83,15 @@ std::string ScriptParser::getScriptText(std::string name)
 
 void ScriptParser::runScript(std::string & script, bool isUtf8)
 {
-	vLexs = parseScript(script, isUtf8);
+	vecLexems parsed = parseScript(script, isUtf8);
+	if (vLexs.size())
+		lexem = vLexs.insert(lexem+1, parsed.begin(), parsed.end());
+	else
+	{
+		vLexs = parsed;
+		lexem = vLexs.begin();
+	}
 	lexEnd = vLexs.end();
-	lexem = vLexs.begin();
 }
 
 void ScriptParser::runScriptFromFile(std::string path, bool isUtf8)
@@ -162,6 +168,7 @@ bool ScriptParser::execNextCommand(ECommand & type, int &pos)
 		++lexem;
 		return true;
 	}
+	vLexs.clear();
 	return false;
 }
 
