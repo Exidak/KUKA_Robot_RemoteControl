@@ -149,7 +149,10 @@ bool ScriptParser::execNextCommand(ECommand & type, int &pos)
 			//check if script exist
 			std::string filename = "scripts/" + name;
 			if (fs::exists(filename))
+			{
 				runScriptFromFile(filename, false);
+				return true;
+			}
 			else
 				throw ScriptError(reslex->position, RC_ERR_SCRIPT_SYNTAX);
 		}
